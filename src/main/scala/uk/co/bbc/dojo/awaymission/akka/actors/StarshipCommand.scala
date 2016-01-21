@@ -1,13 +1,14 @@
 package uk.co.bbc.dojo.awaymission.akka.actors
 
 import akka.actor.{ActorRef, Props, Actor}
-import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand.{SeekOutNewLifeAndNewCivilisations, SurveyResults}
+import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand.{StarshipSOS, SeekOutNewLifeAndNewCivilisations, SurveyResults}
 import uk.co.bbc.dojo.awaymission.akka.actors.Starship.ExplorePlanet
 import uk.co.bbc.dojo.awaymission.locations.{Planet, StarshipBase}
 
 object StarshipCommand {
   case class SeekOutNewLifeAndNewCivilisations(planetsToExplore: List[Planet])
   case class SurveyResults(planet: Planet, alienLifePresent: Boolean)
+  case class StarshipSOS(planet: Planet)
 
   def apply(): Props = Props(new StarshipCommand)
 }
@@ -41,6 +42,9 @@ class StarshipCommand() extends DisplayableActor(StarshipBase) {
       if (uninhabitedPlanets.length + inhabitedPlanets.length == planetsToExplore.length) {
         externalResultActorRef ! inhabitedPlanets.length
       }
+    }
+    case StarshipSOS(planet) => {
+      inhabitedPlanets = inhabitedPlanets :+ planet // Well, if someone was there to blow them up then it must mean that the planet was occupied...
     }
   }
 }

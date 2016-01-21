@@ -1,7 +1,7 @@
 package uk.co.bbc.dojo.awaymission.akka.actors
 
 import akka.actor.Props
-import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand.SurveyResults
+import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand.{StarshipSOS, SurveyResults}
 import uk.co.bbc.dojo.awaymission.akka.actors.Starship.ExplorePlanet
 import uk.co.bbc.dojo.awaymission.locations.{Orbiting, StarshipBase, Planet}
 
@@ -18,7 +18,7 @@ class Starship() extends DisplayableActor(StarshipBase){
       travelTo(planet)
       val alienLifePresent = checkForAlienLife(planet)
       val surveyResultMessage = SurveyResults(planet, alienLifePresent)
-      lastAction = s"messaged [$sender] with [$surveyResultMessage]"
+      lastAction = s"messaged $sender with $surveyResultMessage"
       sender ! surveyResultMessage
     }
   }
@@ -32,4 +32,20 @@ class Starship() extends DisplayableActor(StarshipBase){
     lastAction = s"scanning ${planet} for life"
     planet.scanForLife.get
   }
+
+  // TODO: Maybe change this to be done by throwing a general exception that we wrap the killer one with in receive that holds the
+  //       details of the planet we were scanning.
+  override def preRestart(reason: Throwable, message: Option[Any]) = {
+    super.preRestart(reason, message) // Keep the parent behaviour
+
+    message match {
+      case Some(deadlyPlanetMessage: ExplorePlanet) => {
+        val finalSOS = StarshipSOS(deadlyPlanetMessage.planetToExplore)
+        lastAction = s"messaged $context.parent with $finalSOS"
+        context.parent ! finalSOS
+      }
+      case _ => //Otherwise do nothing.
+    }
+  }
+
 }
