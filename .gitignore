@@ -21,3 +21,6 @@ node_modules
 
 # IntelliJ specific
 .idea
+
+Notes.txt
+project/*
