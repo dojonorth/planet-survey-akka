@@ -16,9 +16,8 @@ project/plugins/project/
 .scala_dependencies
 .worksheet
 
-# IntelliJ Guff
-.idea
-project/
+# Node specific
+node_modules
 
-# My ramblings
-notes.txt
+# IntelliJ specific
+.idea
