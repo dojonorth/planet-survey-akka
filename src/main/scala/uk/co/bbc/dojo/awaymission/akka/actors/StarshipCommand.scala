@@ -21,6 +21,7 @@ class StarshipCommand() extends DisplayableActor(StarshipBase) {
 
   // The EnPrise is a child of Starship Command
   private val theEnPrise = context.actorOf(Starship(), "The-BBC-EnPrise")
+  private val theMerciless = context.actorOf(Starship(LaserGuns), "The-BBC-Merciless")
 
   override def receive: Receive = {
     case SeekOutNewLifeAndNewCivilisations(planetsToExplore: Seq[Planet]) => {
@@ -44,7 +45,9 @@ class StarshipCommand() extends DisplayableActor(StarshipBase) {
       }
     }
     case StarshipSOS(planet) => {
-      inhabitedPlanets = inhabitedPlanets :+ planet // Well, if someone was there to blow them up then it must mean that the planet was occupied...
+      val explorePlanetMessage = ExplorePlanet(planet)
+      lastAction = s"messaged $theMerciless with $explorePlanetMessage"
+      theMerciless ! ExplorePlanet(planet)
     }
   }
 }

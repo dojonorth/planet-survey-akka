@@ -2,8 +2,6 @@ package uk.co.bbc.dojo.actors.pi
 
 trait PiCalculator {
   def calculatePi(): Double
-
-
 }
 
 object LiebnizPi {

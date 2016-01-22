@@ -10,7 +10,8 @@ import scala.concurrent.duration.{Duration, MINUTES}
 import scala.concurrent.Await
 
 /**
- * Based on code from: http://doc.akka.io/docs/akka/2.0/intro/getting-started-first-scala.html
+ * Based (a bit) on code from: http://doc.akka.io/docs/akka/2.0/intro/getting-started-first-scala.html
+ * TODO: Add more comments.
  */
 class AkkaPiCalculator(numberOfIterations: Long) extends PiCalculator {
   private val numberOfWorkerActors = 8
