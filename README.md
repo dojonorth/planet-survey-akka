@@ -105,11 +105,10 @@ PART 4
 ------
 -This interplanetary exploration lark is easy. Run the next test and see what happens...
 -Well, that didn't go so well. Take a look at the series of events that happened in the console.
--What actually happened here is that the En prise was destroyed (threw an unhandled exception) and then Starship Command applied it's default supervision policy, which is to recreate the actor, throw away the bad message and then continue (see how the En Prise traveled from base again to revisit the last planet).
+-What actually happened here is that the En prise was destroyed (threw an unhandled exception) and then Starship Command applied it's default supervision policy (http://doc.akka.io/docs/akka/2.4.1/scala/fault-tolerance.html#Default_Supervisor_Strategy), which is to recreate the actor, throw away the bad message and then continue (see how the En Prise traveled from base again to revisit the last planet).
 -Note that the test then timed out, as Starship Command never then recieved a response about whether or not Clanger Prime was occupied.
--There are a number of ways we could handle this. For now, override the Starships preResart method (don't forget to call super first, as we don't want to lose the default behaviour!) to see if the killer message was one to explore a planet and message Starship Command with a new SOS message saying what the last visited planet was.
+
 -For now, have StarshipCommand assume that if there was someone there to blow up the En Prise, then it probably means that the planet was occupied, so assume that by default.
-TODO: Include link to standard Akka supervision policy.
 
 PART 5
 ------

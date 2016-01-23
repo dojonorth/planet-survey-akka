@@ -1,11 +1,11 @@
 package uk.co.bbc.dojo.awaymission
 
 import org.scalatest.{Matchers, FunSpec}
-import uk.co.bbc.dojo.awaymission.locations.{ClangerPrime, ScannablePlanet}
+import uk.co.bbc.dojo.awaymission.locations.{AbandonedClangerOutpost, ClangerPrime, ScannablePlanet}
 
 class AwayMissionSpec extends FunSpec with Matchers {
     describe("To bravely go where no person has gone before") {
-      ignore("the En Prise should survey a single planet") {
+      it("the En Prise should survey a single planet") {
         val planetWithLife = ScannablePlanet("Gallifrey", true)
 
         val awayMission = new AwayMission
@@ -14,7 +14,7 @@ class AwayMissionSpec extends FunSpec with Matchers {
         numberOfPlanetsWithLife should be(1)
       }
 
-      ignore("the En Prise should survey multiple planets") {
+      it("the En Prise should survey multiple planets") {
         val planetsWithLife = List(ScannablePlanet("Dinosaur", true), ScannablePlanet("Carpathia", true))
         val planetsWithoutLife = List(ScannablePlanet("Rimmerworld", false))
 
@@ -27,14 +27,24 @@ class AwayMissionSpec extends FunSpec with Matchers {
       // Warning, the default behaviour is that the bad message that caused us to explore ClangerPrime will be thrown away,
       // the En Prise will be recreated and will process the remaining messages. However, Starship Command will never
       // receive a response for Clanger Prime and so will eventually timeout.
-      ignore("the En Prise being destroyed will not stop the remaining planets being scanned.") {
-        val planetsToScan = List(ScannablePlanet("Zygor", true), ClangerPrime(), ScannablePlanet("Tripod", true))
+      it("the En Prise being destroyed will not stop the remaining planets being scanned.") {
+        val planetsToScan = List(ScannablePlanet("Zygor", true), ScannablePlanet("Tripod", true), ClangerPrime)
 
         val awayMission = new AwayMission
         val numberOfPlanetsWithLife = awayMission.surveyPlanets(planetsToScan)
 
         // Starship Command assumes that the planet was inhabited if it destroyed the En Prise.
         numberOfPlanetsWithLife should be(planetsToScan.length)
+      }
+
+      it("the En prise being destroyed will not cause command to assume alien life. Instead a more capable ship will be dispatched to make sure.") {
+        val planetsToScan = List(AbandonedClangerOutpost, ClangerPrime, ScannablePlanet("Tripod", true))
+
+        val awayMission = new AwayMission
+        val numberOfPlanetsWithLife = awayMission.surveyPlanets(planetsToScan)
+
+        // Starship Command assumes that the planet was inhabited if it destroyed the En Prise.
+        numberOfPlanetsWithLife should be(2)
       }
 
       it("the fleet will efficiently scan a range of planets") {

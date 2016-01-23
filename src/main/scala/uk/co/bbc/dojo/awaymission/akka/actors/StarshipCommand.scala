@@ -15,16 +15,14 @@ object StarshipCommand {
 }
 
 class StarshipCommand() extends DisplayableActor(StarshipBase) {
-  private val fleetSize = 3
-
   private var externalResultActorRef: ActorRef = _ //TODO: Try and do this better.
   private var planetsToExplore = Seq[Planet]()
   private var uninhabitedPlanets = Seq[Planet]()
   private var inhabitedPlanets = Seq[Planet]()
 
-  // The EnPrise is a child of Starship Command
-  //private val theEnPrise = context.actorOf(Starship(), "The-BBC-EnPrise")
+  private val theEnPrise = context.actorOf(Starship(), "The-BBC-EnPrise") //Used for parts 1 to 5
 
+  private val fleetSize = 3 // Used for subsequent parts.
   private val starshipDispatcher = context.actorOf(Starship().withRouter(BalancingPool(fleetSize)), name = "En-Prise")
 
   private val theMerciless = context.actorOf(Starship(LaserGuns), "The-BBC-Merciless")

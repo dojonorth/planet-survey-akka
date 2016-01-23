@@ -18,8 +18,15 @@ case class ScannablePlanet(name: String, hasLife: Boolean, timeToScanInMilliseco
   }
 }
 
-case class ClangerPrime() extends Planet {
+object ClangerPrime extends Planet {
   override def name: String = "Clanger Prime"
 
-  override def scanForLife: Try[Boolean] = Failure(new ClangerBirdOfPreyAttack)
+  override def scanForLife: Try[Boolean] = Failure(new ClangerBirdOfPreyAttack(true))
 }
+
+object AbandonedClangerOutpost extends Planet {
+  override def name: String = "A long abandoned Clanger outpost"
+
+  override def scanForLife: Try[Boolean] = Failure(new ClangerBirdOfPreyAttack(false))
+}
+

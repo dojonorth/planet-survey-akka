@@ -7,7 +7,6 @@ trait UIListener {
   def locationChanageNotification(displayable: DisplayableThing, oldLocation: Location)
 }
 
-//TODO: Maybe change to not be an object and pass an instance around. Probably not just for the dojo though.
 object ConsoleOutputListener extends UIListener{
   override def locationChanageNotification(displayable: DisplayableThing, oldLocation: Location) = {
     println(s"${displayable.name} moved to ${displayable.location} from $oldLocation")

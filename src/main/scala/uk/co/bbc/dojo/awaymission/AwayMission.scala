@@ -11,8 +11,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 class AwayMission {
-  /* Returns the number of planets with life on them */
-  //TODO: Intially return 0.
+  /** Returns the number of planets with life on them */
   def surveyPlanets(planetsToSurvey: List[Planet]): Int = {
     val akkaSystem = ActorSystem("The-Corperation")
 

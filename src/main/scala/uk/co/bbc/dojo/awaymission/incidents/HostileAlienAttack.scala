@@ -1,3 +1,3 @@
 package uk.co.bbc.dojo.awaymission.incidents
 
-class HostileAlienAttack extends Exception
+case class HostileAlienAttack(message: String, planetOccupied: Boolean) extends Exception(message)
