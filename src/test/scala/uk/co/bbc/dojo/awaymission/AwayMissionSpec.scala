@@ -1,7 +1,7 @@
 package uk.co.bbc.dojo.awaymission
 
-import org.scalatest.{FunSpec, Matchers}
-import uk.co.bbc.dojo.awaymission.locations.{ClangerPrime, ScannablePlanet, Planet}
+import org.scalatest.{Matchers, FunSpec}
+import uk.co.bbc.dojo.awaymission.locations.{ClangerPrime, ScannablePlanet}
 
 class AwayMissionSpec extends FunSpec with Matchers {
     describe("To bravely go where no person has gone before") {
@@ -35,6 +35,24 @@ class AwayMissionSpec extends FunSpec with Matchers {
 
         // Starship Command assumes that the planet was inhabited if it destroyed the En Prise.
         numberOfPlanetsWithLife should be(planetsToScan.length)
+      }
+
+      it("the fleet will efficiently scan a range of planets") {
+        val planetsToScan = List(ScannablePlanet("Dity-365", true, 1200), ScannablePlanet("Yol-1", false, 1500), ScannablePlanet("Doc-12", false, 3500),
+                                 ScannablePlanet("LBA-40", false, 500), ScannablePlanet("Pitss-8n", true, 2000), ScannablePlanet("Seven-11", true, 4200),
+                                 ScannablePlanet("Cimpn-439", false, 200), ScannablePlanet("Majestic-12", true, 1100), ScannablePlanet("Omega-5", false, 2900),
+                                 ScannablePlanet("Omega-5", false, 2300))
+
+        val awayMission = new AwayMission
+
+        val startTime = System.currentTimeMillis()
+        val numberOfPlanetsWithLife = awayMission.surveyPlanets(planetsToScan)
+        val endTime = System.currentTimeMillis()
+
+        numberOfPlanetsWithLife should be(4)
+
+        val totalTime = (endTime - startTime) / 1000.0
+        totalTime should be(7.0 +- 0.5)
       }
     }
 }

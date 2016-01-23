@@ -1,6 +1,7 @@
 package uk.co.bbc.dojo.awaymission.akka.actors
 
 import akka.actor.{ActorRef, Props, Actor}
+import akka.routing.{BalancingPool, RoundRobinPool}
 import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand.{StarshipSOS, SeekOutNewLifeAndNewCivilisations, SurveyResults}
 import uk.co.bbc.dojo.awaymission.akka.actors.Starship.ExplorePlanet
 import uk.co.bbc.dojo.awaymission.locations.{Planet, StarshipBase}
@@ -14,13 +15,18 @@ object StarshipCommand {
 }
 
 class StarshipCommand() extends DisplayableActor(StarshipBase) {
+  private val fleetSize = 3
+
   private var externalResultActorRef: ActorRef = _ //TODO: Try and do this better.
   private var planetsToExplore = Seq[Planet]()
   private var uninhabitedPlanets = Seq[Planet]()
   private var inhabitedPlanets = Seq[Planet]()
 
   // The EnPrise is a child of Starship Command
-  private val theEnPrise = context.actorOf(Starship(), "The-BBC-EnPrise")
+  //private val theEnPrise = context.actorOf(Starship(), "The-BBC-EnPrise")
+
+  private val starshipDispatcher = context.actorOf(Starship().withRouter(BalancingPool(fleetSize)), name = "En-Prise")
+
   private val theMerciless = context.actorOf(Starship(LaserGuns), "The-BBC-Merciless")
 
   override def receive: Receive = {
@@ -30,8 +36,8 @@ class StarshipCommand() extends DisplayableActor(StarshipBase) {
 
       for(nextPlanetToExplore <- planetsToExplore) {
         val explorePlanetMessage = ExplorePlanet(nextPlanetToExplore)
-        lastAction = s"messaged $theEnPrise with $explorePlanetMessage"
-        theEnPrise ! ExplorePlanet(nextPlanetToExplore)
+        lastAction = s"messaged $starshipDispatcher with $explorePlanetMessage"
+        starshipDispatcher ! ExplorePlanet(nextPlanetToExplore)
       }
     }
     case SurveyResults(planet, alienLifePresent) => {

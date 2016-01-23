@@ -11,20 +11,15 @@ trait Planet extends Location {
   override def toString: String = name
 }
 
-case class ScannablePlanet(name: String, hasLife: Boolean) extends Planet {
-  override def scanForLife: Try[Boolean] = Success(hasLife)
+case class ScannablePlanet(name: String, hasLife: Boolean, timeToScanInMilliseconds: Int = 0) extends Planet {
+  override def scanForLife: Try[Boolean] = {
+    Thread.sleep(timeToScanInMilliseconds)
+    Success(hasLife)
+  }
 }
-
-
 
 case class ClangerPrime() extends Planet {
   override def name: String = "Clanger Prime"
 
   override def scanForLife: Try[Boolean] = Failure(new ClangerBirdOfPreyAttack)
-}
-
-class UnscannableAtmosphereException extends Exception
-
-case class UnscannablePlanet(name: String, hasLife: Boolean) extends Planet {
-  override def scanForLife: Try[Boolean] = Failure(new UnscannableAtmosphereException)
 }

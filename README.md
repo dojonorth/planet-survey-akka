@@ -123,11 +123,10 @@ TODO: Introduce a new exception type that isn't a hostile alien attack so that t
 PART 6
 ------
 -The list of planets to explore is never ending! Starship Command now want to expand its fleet to three ships!
--Retire the En Prise and replace it with a router that creates three (unarmed) ships (see the Pi example for inspiration). Stick with the RoundRobin router for now.
+-Retire the En Prise and replace it with a router that creates three (unarmed) ships (see the Pi example for inspiration). Stick with the RoundRobin router for now. Also for consistency, call the Router the same name as the En Prise
 -Well, it's working, but it's so slow! The problem is that the RoundRobin router that we're using is allocating the planets to explore to the Starships up front. However, some planets are taking much longer to survey than others, leaving some of our fleet idling.
 -Take a look at the Akka routing strategies and select a different one that will make better use of our fleet's time.
 -See: http://doc.akka.io/docs/akka/2.4.1/scala/routing.html
--TODO: Make the assertion assert that the total time should be less than some limit maybe.
 
 PART 7 (OPTIONAL)
 -----------------
