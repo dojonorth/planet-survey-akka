@@ -1,7 +1,7 @@
 # planet-survey-akka
 Learn Akka! Discover strange new alien species, then get killed by them!
 
-TODO: Say which sections are skippable if you're really YOLO
+TODO: Say which sections are skippable if you're really YOLO (basically, just jump straight in and go through the worked example.)
 
 ## Introduction
 Reasoning about concurrent code can be very hard - manually managing interacting threads is likely one of the hardest things you'd ever be asked to do as a programmer. Despite this, the need to parallelise to meet performance goals is ever increasing. This can be attributed to a shift over the last decade or so, whereby CPU performance increases have come much more from increasing numbers of logical cores and not increased single-core performance. Hence, it's no surprise that in recent years, new abstractions have gained popularity that attempt to insulate us from low-level thread management and enable to reason at a a higher level.
@@ -63,32 +63,36 @@ Akka is particularly suited to problems with the following characteristics:
 * *Scaling out over distributed machines would be beneficial:* Akka actors are locationally transparent and inherently network-aware, so scaling out across multiple machines should be easy.
 * [Here's](http://doc.akka.io/docs/akka/2.4.1/intro/why-akka.html) Akka's take on when to use it.
 
-Akka has excellent documentation. All of these concepts are covered in more detail [here](http://doc.akka.io/docs/akka/2.4.1/scala.html?_ga=1.63865131.582646974.1449063503).
+Akka has excellent documentation. All of these concepts are covered in more detail [here](http://doc.akka.io/docs/akka/2.4.1/scala.html).
 
-# A Worked Example
-- Take a look at uk.co.bbc.dojo.actors.pi.SingleThreadedPiCalculator.
-- This calculates Pi by using the Leibniz formula https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80
-- (I also discovered whilst reading this how to calculate Pi by throwing hotdogs - check here for a laugh: http://www.wikihow.com/Calculate-Pi-by-Throwing-Frozen-Hot-Dogs)
-- Pi is calculated by the summation of an infinite sequence of fractions as per (TODO: Properly markup):
+## Calculating Pi In Parallel
+This section is a worked example of a relatively simple parallisable problem. The intention is that by working through it, we can build up a good understanding of the problem domain, so that when we move onto the Akka implementation, we can focus on purely on the actor-related aspects of it. The Akka implementation should then also serve as a template that can be referenced in the main exercise.
+
+One way of calculating Pi is using the [Leibniz formula](https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80) (another is [throwing sausages](http://www.wikihow.com/Calculate-Pi-by-Throwing-Frozen-Hot-Dogs), but I won't cover that here). Pi is calculated by the summation of an infinite sequence of fractions as per:
+```
 π = (4/1) - (4/3) + (4/5) - (4/7) + (4/9) - (4/11) + ...
-- This is an example of an embarassingly parallel problem (https://en.wikipedia.org/wiki/Embarrassingly_parallel). Each of the terms is independent of the other and so we can potentially farm out blocks of terms to different cores and then sum their results together at the end.
-- For example, we could calculate (4/1) - (4/3) + (4/5) in one core and then (4/7) + (4/9) - (4/11) in another in parallel before adding the results together at the end.
+```
+This is an example of an [embarrassingly parallel problem](https://en.wikipedia.org/wiki/Embarrassingly_parallel). Each of the terms is independent of the other and so we can potentially farm out blocks of terms to different cores and then sum their results together at the end. For example, we could calculate (4/1) - (4/3) + (4/5) in one core and then (4/7) + (4/9) - (4/11) in another in parallel before adding the results together at the end.
 
-- Run the first test in PiCalculationSpeedComparisonSpec. This uses the 'niz to calculate Pi from the first 2000000000 terms.
-- Observe that it's quite slow. It takes about 20 seconds to run on my Mac.
+Take a look at **uk.co.bbc.dojo.actors.pi.SingleThreadedPiCalculator** and observe how this uses the 'niz to calculate Pi.
 
-- Run the second test in PiCalculationSpeedComparisonSpec. This uses Scala futures to farm out blocks of a million terms to available cpu cores.
-- Don't worry too much about exactly what's happening here. I've included it mainly just provide some contrast with Akka show the simplest (that I can think of) way of scaling the problem out.
-- Observe that it's much faster than the single-threaded test. It takes about 2.7 seconds to run on my Mac. This is about 8x faster than the single threaded one, which makes sense as my Mac has 8 logical cores.
-- (The threading is defined by the ExecutionContext - we're using the default one that will parallelise up to the number of logical cores your machine reports it has).
+Look at the first test in **uk.co.bbc.dojo.actors.pi.PiCalculationSpeedComparisonSpec**. This uses the 'niz to calculate Pi from the first 2000000000 terms. Run it and observe that it's quite slow. It takes about 20 seconds to run on my Mac.
 
-- Run the third test in PiCalculationSpeedComparisonSpec. This uses Akka to produce a number of messages that each stiplulate a million term block to calculate.
-- The messages are sent by a Master to the mailboxes of 8 Worker actors who will calculate each block in turn and then return the answer to the master who composes the figures and then returns the result once all have finished.
-- (Note that I could have just divided the terms in 8 evenly-sized blocks, but I chose not to, mainly maintain similarity between the Futures implementation).
-- Observe that the code is almost as fast as the futures implementation. On my Mac it takes about 2.9 seconds to run.
+Now take a look at **uk.co.bbc.dojo.actors.pi.MultiThreadedFuturesPiCalculator**. This uses Scala futures to farm out blocks of a million terms to available cpu cores. Run the second test and observe that it's much faster than the single-threaded test. It takes about 2.7 seconds to run on my Mac. This is about 8x faster than the single threaded one, which makes sense as my Mac has 8 logical cores. Don't worry too much about exactly what's happening here if you're not familiar with Scala. I've included it mainly just provide some contrast with Akka show the simplest (that I can think of) way of scaling the problem out.
+- 
+Finally, have a look at **uk.co.bbc.dojo.actors.pi.AkkaPiCalculator**. This uses Akka to produce a number of messages that each stipulate a million term block to calculate. Run the third test and observe that the code is almost as fast as the futures implementation. On my Mac it takes about 2.9 seconds to run.
 
-- Note that this isn't actually a case where I would advocate using Akka (this used to actually be the worked example on the Akka website, but they got rid of it - probably because they thought the same). As you can see, the Akka implementation takes up considerably more lines of code and takes longer to run.
-- Instead this example is intended to provide the basic concepts that you'll need to perform the dojo, so take a look at it (I've heavily commented it) and ensure that you have a general feel for what's going on.
+I've added extensive commenting to explain the functionality. The gist is:
+* An Akka actor system is created.
+* A master is created that is in charge of coordinating the distribution of the calculation and returning the result.
+* The master creates 8 Worker actors. The worker actors are used to actually calculate the result of specific ranges of terms.
+* All of the messages are sent immediately by the by a Master to the mailboxes of 8 Worker actors (it doesn't wait for them to finish). The mailboxes of the actors buffer the messages and feed the workers' receive methods in order.
+
+A couple of minor quirks of the code are:
+* The fact that I didn't divide the terms into 8 evenly-sized blocks. I chose not to highlight message buffering and to maintain similarity with the Futures implementation.
+* The master having to store the initial ActorRef of the temporary sender used to fulfill the ask pattern (? operator). More normally, Akka systems purely fire and forget and don't block like this. However, since we want a result out, rather than it being a continuous system, then there has to be a point where we block and await the result.
+
+Although I used this as an example, it isn't actually a case where I would advocate using Akka, since it's so simple: it takes up more lines of code and is slower than the Futures-baed solution. Interestingly, there used to be a similar worked example on the Akka website, but they got rid of it - probably because they thought the same.
 
 # Over To You
 -The exercise we're going to look at focuses on the voyages of a starship and its long running quest to seek out new life and new civilisations.
