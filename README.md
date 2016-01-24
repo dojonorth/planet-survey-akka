@@ -79,7 +79,7 @@ Take a look at **uk.co.bbc.dojo.actors.pi.SingleThreadedPiCalculator** and obser
 Look at the first test in **uk.co.bbc.dojo.actors.pi.PiCalculationSpeedComparisonSpec**. This uses the 'niz to calculate Pi from the first 2000000000 terms. Run it and observe that it's quite slow. It takes about 20 seconds to run on my Mac.
 
 Now take a look at **uk.co.bbc.dojo.actors.pi.MultiThreadedFuturesPiCalculator**. This uses Scala futures to farm out blocks of a million terms to available cpu cores. Run the second test and observe that it's much faster than the single-threaded test. It takes about 2.7 seconds to run on my Mac. This is about 8x faster than the single threaded one, which makes sense as my Mac has 8 logical cores. Don't worry too much about exactly what's happening here if you're not familiar with Scala. I've included it mainly just provide some contrast with Akka show the simplest (that I can think of) way of scaling the problem out.
-- 
+
 Finally, have a look at **uk.co.bbc.dojo.actors.pi.AkkaPiCalculator**. This uses Akka to produce a number of messages that each stipulate a million term block to calculate. Run the third test and observe that the code is almost as fast as the futures implementation. On my Mac it takes about 2.9 seconds to run.
 
 I've added extensive commenting to explain the functionality. The gist is:
