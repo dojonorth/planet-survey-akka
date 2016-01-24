@@ -79,7 +79,7 @@ Take a look at **uk.co.bbc.dojo.actors.pi.SingleThreadedPiCalculator** and obser
 Look at the first test in **uk.co.bbc.dojo.actors.pi.PiCalculationSpeedComparisonSpec**. This uses the 'niz to calculate Pi from the first 2000000000 terms. Run it and observe that it's quite slow. It takes about 20 seconds to run on my Mac.
 
 Now take a look at **uk.co.bbc.dojo.actors.pi.MultiThreadedFuturesPiCalculator**. This uses Scala futures to farm out blocks of a million terms to available cpu cores. Run the second test and observe that it's much faster than the single-threaded test. It takes about 2.7 seconds to run on my Mac. This is about 8x faster than the single threaded one, which makes sense as my Mac has 8 logical cores. Don't worry too much about exactly what's happening here if you're not familiar with Scala. I've included it mainly just provide some contrast with Akka show the simplest (that I can think of) way of scaling the problem out.
-
+- 
 Finally, have a look at **uk.co.bbc.dojo.actors.pi.AkkaPiCalculator**. This uses Akka to produce a number of messages that each stipulate a million term block to calculate. Run the third test and observe that the code is almost as fast as the futures implementation. On my Mac it takes about 2.9 seconds to run.
 
 I've added extensive commenting to explain the functionality. The gist is:
@@ -94,23 +94,38 @@ A couple of minor quirks of the code are:
 
 Although I used this as an example, it isn't actually a case where I would advocate using Akka, since it's so simple: it takes up more lines of code and is slower than the Futures-baed solution. Interestingly, there used to be a similar worked example on the Akka website, but they got rid of it - probably because they thought the same.
 
-# Over To You
--The exercise we're going to look at focuses on the voyages of a starship and its long running quest to seek out new life and new civilisations.
--Akka forces you to construct heirrarchies of actors which map well onto a military / corporate structure, so we'll assume a chain of command in our example.
--We'll go through making a number of tests pass. At the moment, they're all ignored. See uk.co.bbc.dojo.awaymission.AwayMissionSpec. We're going to focus on the series of event we see in the console for each test, so I recommend runnng them one at a time (TODO: Say about test-only or using SBT) - i.e. even though the first test will still pass once you move onto the second one, don't keep running it as it will muddy the water in the console output.
--As there's so much to try and cram into a Dojo, then it's a bit more perscriptive than normal. At least for the early parts.
--In general, if you don't know Scala and it's the syntax that's holding you back, then try and work out logically what you want to do, then take a look at the solution.
--TODO: Add links to the Akka Doc (say it's really good) for all these things if people need more info.
+#The Exercise
+The exercise we're going to look at focuses on the voyages of a starship and its long running quest to seek out new life and new civilisations.
 
-PART 1
-------
--AwayMission will act as our entry point.
--Create an Akka system called 'The-Corperation'
--Create a StarshipCommand called 'Admiral-Reith'. This should be a top-level actor i.e. create is by calling 'actorOf' directly on the Akka system you've just created.
--Message command and tell it to go and scan the passed planet (Gallifrey, in this case).
--Note that Akka names are limited (include link). Basically, no spaces just alphanumeric characters and numbers.
-TODO: Get rid of the construction of the akka system and the ship. Ensure command returns -1 by default.
-TODO: Try and get a test in to match up with this that returns a zero.
+TODO: Probably put some sort of image in here.
+
+We'll go through making a number of tests pass. At the moment, they're all ignored. See **uk.co.bbc.dojo.awaymission.AwayMissionSpec**. In order to make a test run, then change *ignore* to *it*. I.E.
+```
+ignore("the En Prise should survey a single planet") {
+```
+becomes:
+```
+ignore("the En Prise should survey a single planet") {
+```
+The system outputs events to the console, which are key in understanding how the Akka system is operating, so even though as we build up functionality, the earlier tests will still pass, I recommend only running one test at a time, so as not to clutter the console. You can do this by explicitly selecting single tests to run in IntelliJ or by only ever having the current test not ignored if you're running them from the command line.
+
+TODO: Include links from hereon in to relevant Akka documentation
+
+# Part 1 - The Founding of the Corporation
+*Well, we had a good innings, but it looks like Earth is finished. Our only hope is to go and find another planet that we can colonise. The countries of the world have come together and agreed to the founding of 'The Galactic Corporation' (aka 'The Corporation'). You are tasked with making it happen.*
+
+* Go to **uk.co.bbc.dojo.awaymission**
+* Create an an Akka system called 'The-Corporation'
+* Create a StarshipCommand actor called 'Admiral-Reith'. This should be a top-level actor i.e. create is by calling 'actorOf' directly on the Akka system you've just created.
+* Message the starship command actor with a **uk.co.bbc.dojo.awaymission.akka.actorsSeekOutNewLifeAndNewCivilisations** telling it to go and scan the passed planet (Gallifrey, in this case).
+
+Notes:
+* Akka forces you to construct hierarchies of actors, such that each actor is supervised by a single parent. This map well onto a military / corporate structure, so we'll assume a chain of command in our example.
+* The name parameter is optional to Akka Systems and Actors, however, providing one is good practice. Be aware that Akka names don't allow certain special characters or spaces. For now, stick to alphanumeric characters, numbers and hyphens.
+* The 'actorOf' method actually takes a 'Props' object. I've glossed over this by providing companion objects for each actor that handle this in their constructors. i.e. you can just call:
+```
+actorOf(StarshipCommand(), name = ...
+```
 
 PART 2
 ------
