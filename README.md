@@ -1,34 +1,69 @@
 # planet-survey-akka
-Learn Akka! Discover strange alien species, then get killed by them!
+Learn Akka! Discover strange new alien species, then get killed by them!
 
-NOTE - THESE NOTES ARE REALLY ROUGH - I'll TIDY THEM UP.
+TODO: Say which sections are skippable if you're really YOLO
 
-# Setup
-TODO: Include some stuff on setting up sbt with brew if people don't have it.
--Install SBT - you can go this using 'brew install sbt;
--For ease of running and editing I'd also suggest importing it into an IDE. IntelliJ should recognise it as a Scala project and read the build.sbt)
--I'm using the latest version of Akka, which needs Java 8 - so you'll need that. Download the DMG here:  http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
--Clone the repo locally and run 'sbt test' to compile and run the work.
--It's written in Scala, but mostly you'll be plugging together existing code based on a given example, so even if you're not familiar with Scala then you should be able to make progress.
+## Introduction
+Reasoning about concurrent code can be very hard - manually managing interacting threads is likely one of the hardest things you'd ever be asked to do as a programmer. Despite this, the need to parallelise to meet performance goals is ever increasing. This can be attributed to a shift over the last decade or so, whereby CPU performance increases have come much more from increasing numbers of logical cores and not increased single-core performance. Hence, it's no surprise that in recent years, new abstractions have gained popularity that attempt to insulate us from low-level thread management and enable to reason at a a higher level.
 
-# Intro
--Reasoning about concurrent code is very hard - try wriring a complex multi-thread system in Java without any libraries. Likely it'll be one of the hardest things you'll ever have to do.
--However, lots of interest in further parallelising code last 5 or so years. Probably as a consequence of the need to parallelise code more as we begin to reach the limits of single core performance (Moore's Law) improvements and new architectures instead scale out with more logical cores.
--Hence, it's no surprise that in recent years, lots of new abstractions have come along for reasoning about concurrent logic. They give us higher level abstractions that are more easy to comprehend, rather than having to worry about the nitty gritty of managing individual threads and dealing with inter-thread communication.
--One such abstraction is the use of Futures in Scala, that Jens covered in another dojo (TODO: Link).
--I'm going to talk about another - the Actor Model, and specifically, it's most prominent implementation, Akka (http://akka.io).
--Note that I'm *far* from an Akka expert. I read up on it myself for the dojo, so if you notice any inefficiencies or unidiomatic constructs, then flag me up and I'll read up and correct it.
+One such abstraction is the use of Futures / Promises that was covered in a [previous dojo](https://github.com/dojonorth/promise-lander-kata). I'm going to cover another, the [Actor Model](https://en.wikipedia.org/wiki/Actor_model); specifically, its most prominent implementation [Akka](http://akka.io).
 
-# The Actor Model
-- Originated in 1973 - almost as old as me: https://en.wikipedia.org/wiki/Actor_model
-- Abstracts over low-level concurrency by introducing the idea of independent actors that communicate via messages.
-- Erlang takes idea and really run with it (https://en.wikipedia.org/wiki/Erlang_(programming_language). Used with great success in telecoms industry for last decade or so.
-- Key principles:
-    - Actors are autonomous objects. They don't share state.
-    - Actors communicate via asynchronous immutable messages.
-    - Actors have mailboxes that buffer pending messages.
-    - Highly fault tolerent - encapsulated actors means that failures are localised and recovery strategies can be defined.
-    - No shared resource = no blocking = very fast and scalable.
+**Disclaimer:** I'm *far* from an Akka expert. I learnt about it myself for the dojo, so if you notice any inefficiencies or unidiomatic practices, then flag me up and I'll look to improve upon my code.
+
+## Dojo Format
+I've written the dojo in Scala. A Java implementation also exists, but the Scala version is widely considered to be the nicer one to work with due to language support for pattern matching etc (note that in terms of performance though, both will be approximately equal as they compile down to very similar bytecode).
+
+If you don't know Scala, I hope that you should still be able to make good progress. I've provided a similar example that you should be able to lift code from without getting bogged down in Scala syntax. Worst case, you can just copy and paste from the provided solution as you work through the exercise. The important thing to take away is an understanding of the underlying concepts, which will then enable you to make use of one of the other many actor model libraries written in your language of choice.
+
+Note that the exercises are quite prescriptive. There's quite a number of fundamental principles that I wanted to get across and so I though this was the best way of doing it. I've included a few optional extra exercises at the end, which are more open-ended. If you're already familiar with Akka, I expected that you'll be able to fly through the core exercises (no pun intended) and will have more of a free hand on these.
+
+## Setup
+1. Ensure SBT is installed. If not, install it via:
+```
+brew install sbt
+```
+2. Ensure the Java 8 **JDK** (not just the JRE) is installed (it's required by the latest version of Akka). It can be downloaded from [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+3. Clone to repo locally:
+```
+git clone git@github.com:dojonorth/planet-survey-akka.git
+```
+4. Open the code in your favourite IDE. If you have IntelliJ, then you should just be able to import the build.sbt. At a push, any text editor that lets you naviagate the code should be fine.
+5. Compile and run the tests. If you're using IntelliJ, then it should be easy to do this from there. Otherwise, running the tests directly from the command line is fine. To run all of the tests then from directly within the planet-survey-akka folder run:
+```
+sbt test
+```
+Alternatively, run just the Pi speed tests with:
+```
+sbt 'test-only uk.co.bbc.dojo.actors.pi.PiCalculationSpeedComparisonSpec'
+```
+Or the exercise tests with:
+```
+sbt 'test-only uk.co.bbc.dojo.awaymission.AwayMissionSpec'
+```
+
+## The Actor Model
+The Actor Model originated in a 1973 paper by [Carl Hewitt](https://en.wikipedia.org/wiki/Carl_Hewitt). Ericsson's use of Actors in [Erlang](https://en.wikipedia.org/wiki/Erlang_(programming_language)) (**Er**icsoon **Lang**uage) in the late 90s helped popularise it.
+
+The key principles of the actor model (with a slight emphasis on the Akka implementation) are:
+* Everything is an Actor - akin to Objects in OO.
+* Actors are autonomous objects. They don't share state.
+* Actors communicate via asynchronous immutable messages.
+* Behaviour is triggered in response to messages.
+* Actors (in Akka) have mailboxes that buffer pending messages.
+
+The benefits of this are:
+* No shared resource = no blocking = very fast and scalable
+* Thread management can be largely abstracted over.
+* Highly fault tolerant system can be developed - encapsulated actors means that failures can be localised and robust recovery strategies can be defined.
+* Distributing actors over remote systems is easy.
+* Lack of shared state and clear boundaries makes comprehending the system easy (at least, as far as multi-threaded systems go...).
+
+Akka is particularly suited to problems with the following characteristics:
+* *A non-trivial concurrent element:* For simple parallelism, as the next section will show, it's probably overkill.
+* *Scaling out over distributed machines would be beneficial:* Akka actors are locationally transparent and inherently network-aware, so scaling out across multiple machines should be easy.
+* [Here's](http://doc.akka.io/docs/akka/2.4.1/intro/why-akka.html) Akka's take on when to use it.
+
+Akka has excellent documentation. All of these concepts are covered in more detail [here](http://doc.akka.io/docs/akka/2.4.1/scala.html?_ga=1.63865131.582646974.1449063503).
 
 # A Worked Example
 - Take a look at uk.co.bbc.dojo.actors.pi.SingleThreadedPiCalculator.
@@ -54,12 +89,6 @@ TODO: Include some stuff on setting up sbt with brew if people don't have it.
 
 - Note that this isn't actually a case where I would advocate using Akka (this used to actually be the worked example on the Akka website, but they got rid of it - probably because they thought the same). As you can see, the Akka implementation takes up considerably more lines of code and takes longer to run.
 - Instead this example is intended to provide the basic concepts that you'll need to perform the dojo, so take a look at it (I've heavily commented it) and ensure that you have a general feel for what's going on.
-- Akka is much more suited to more complex systems. It has a number of key strengths:
-    - Actors are inherently network aware. Scaling out across multiple machines should be easy.
-    - Coherent and robust error handling.
-    - Lack of shared state and clear boundaries makes comprehending the system easy (as far as multi-threaded systems go).
-    - Basically, if you're creating a complex parallel system, then Akka is likely a good condidiate
-    - See here for Akka's take (http://doc.akka.io/docs/akka/2.4.1/intro/why-akka.html)
 
 # Over To You
 -The exercise we're going to look at focuses on the voyages of a starship and its long running quest to seek out new life and new civilisations.
