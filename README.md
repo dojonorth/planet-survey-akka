@@ -18,17 +18,17 @@ If you don't know Scala, I hope that you should still be able to make good progr
 Note that the exercises are quite prescriptive. There's quite a number of fundamental principles that I wanted to get across and so I though this was the best way of doing it. I've included a few optional extra exercises at the end, which are more open-ended. If you're already familiar with Akka, I expected that you'll be able to fly through the core exercises (no pun intended) and will have more of a free hand on these.
 
 ## Setup
-1. Ensure SBT is installed. If not, install it via:
+* Ensure SBT is installed. If not, install it via:
 ```
 brew install sbt
 ```
-2. Ensure the Java 8 **JDK** (not just the JRE) is installed (it's required by the latest version of Akka). It can be downloaded from [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
-3. Clone to repo locally:
+* Ensure the Java 8 **JDK** (not just the JRE) is installed (it's required by the latest version of Akka). It can be downloaded from [here](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html).
+* Clone to repo locally:
 ```
 git clone git@github.com:dojonorth/planet-survey-akka.git
 ```
-4. Open the code in your favourite IDE. If you have IntelliJ, then you should just be able to import the build.sbt. At a push, any text editor that lets you naviagate the code should be fine.
-5. Compile and run the tests. If you're using IntelliJ, then it should be easy to do this from there. Otherwise, running the tests directly from the command line is fine. To run all of the tests then from directly within the planet-survey-akka folder run:
+* Open the code in your favourite IDE. If you have IntelliJ, then you should just be able to import the build.sbt. At a push, any text editor that lets you naviagate the code should be fine.
+* Compile and run the tests. If you're using IntelliJ, then it should be easy to do this from there. Otherwise, running the tests directly from the command line is fine. To run all of the tests then from directly within the planet-survey-akka folder run:
 ```
 sbt test
 ```
