@@ -108,7 +108,7 @@ ignore("the En Prise should survey a single planet") {
 ```
 The system outputs events to the console, which are key in understanding how the Akka system is operating, so even though as we build up functionality, the earlier tests will still pass, I recommend only running one test at a time, so as not to clutter the console. You can do this by explicitly selecting single tests to run in IntelliJ or by only ever having the current test not ignored if you're running them from the command line.
 
-# Part 1 - The Founding of The Corporation
+## Part 1 - The Founding of The Corporation
 
 *Well, we had a good innings, but it looks like Earth is finished. Our only hope is to go and find another planet that we can colonise. The countries of the world have come together and agreed to the founding of 'The Galactic Corporation' (aka 'The Corporation'). You are tasked with making it happen.*
 
@@ -125,7 +125,7 @@ Notes:
 actorOf(StarshipCommand(), name = ...
 ```
 
-# Part 2 - Creating Our First Ship
+## Part 2 - Creating Our First Ship
 *Without any starships to send out into space, Starship command is struggling. We need a ship that we can actually send out there to do something! In this part, we'll create our first starship under the stewardship of The Corporate, the BBC En Prise and send it out into the great unknown!*
 
 * Go to **uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand**
@@ -139,7 +139,7 @@ actorOf(StarshipCommand(), name = ...
 Notes:
 * It's [good practice](http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#Recommended_Practices) to put the message types that an Actor can receive in it's companion object, so ensure you've declared your messages in the correct places.
 
-#3 Part 3 - Scanning Multiple planets
+## Part 3 - Scanning Multiple planets
 *The En Prise has proved itself! Now it's time to up the ante. We'll send the En Prise off to scan a number of planets; have Starship Command tally the number of occupied ones and then return us the result.*
 
 * Have Starship Command message the En Prise with each of the planets to survey.
@@ -148,7 +148,7 @@ Notes:
 Notes:
 * Being an Akka actor means that the En Prise will have a mailbox that buffers messages and feeds them to the receive method, so send all of them to it at the start, don't send them lockstep with responses (see [here](http://doc.akka.io/docs/akka/2.4.1/scala/mailboxes.html#mailboxes-scala) for painful amounts of detail on Akka mailboxes).
 
-# Part 4 - Reporting Failure
+## Part 4 - Reporting Failure
 *Oh dear, and everything was going so well... Something went wrong while we were scanning the next batch of planets. Now Starship Command is left waiting indefinitely for a response that will never come. We need to improve our protocols to avoid this situation.*
 
 * Before thinking about making the test pass, look at the series of events that happened in the console. After scanning the errant planet, the En Prise still managed to continue its journey. Note though that it moved from *Starship Command* to the next planet along! The reason was Akka's default error handling strategy is to throw away the message that caused the exception, recreate the actor (hidden within the ActorRefwhich remains the same) and the process the next message. Hence, the En Prise moving from Starship Command - it was really a different ship that continued - all new ships start out at Starship Command.
@@ -159,13 +159,13 @@ Notes:
 * See [here](http://doc.akka.io/docs/akka/2.4.1/general/supervision.html#What_Restarting_Means) for more detail on restarts and [here](http://doc.akka.io/docs/akka/2.4.1/scala/fault-tolerance.html#Default_Supervisor_Strategy) for more detail on Akka's default approach to error handling.
 * An alternative approach - that you might try if you're curious - would be to override Starship Command's supervisor strategy to specifically deal with the exception type that we're seeing throw, as described [here](http://doc.akka.io/docs/akka/2.4.1/scala/fault-tolerance.html#Default_Supervisor_Strategy), in some ways, that feels neater, but I don't see how we then recover from it and determine which planet it was we failed to scan. The only solution I could come up with was to introduce a try block around the planet scanning and introduce a new exception type that we throw that includes the name of the bad planet so Command can then pick it up. I'd have thought this would be a common problem, which makes me think I might be missing something, but articles that I found, such as [this](http://mattro.be/rts/posts/2015/08/08/fault-tolerance-in-akka/).
 
-# Part 5 - Dealing with Failure
+## Part 5 - Dealing with Failure
 *Another day, another planet explored. It turns out that our assumption that whenever the En Prise is destroyed it was by hostile aliens was a dodgy one. The mighty Clanger Empire has started just destroyed our ships when we're they're scanning unoccupied planets for fun. Starship Command has had enough of living under the yolk of Clanger tyranny and so decides to commission a new ship that can fight back!*
 
 * Create a new ship under the Supervision of Starship Command, but this time equip it with laser cannons! Anticlimactically, this just involves calling the other constructor... I'll let you name it.
 * Whenever the En Prise sends an SOS, then message the new ship and tell them to scan that planet instead.
 
-# Part 6 - Expand the Fleet
+## Part 6 - Expand the Fleet
 *The list of planets to explore is never ending! Starship Command has lined a list of new planets to explore. These ones have thick atmospheres and are going to take time scan and Command wants the results asap! As we all know, the way to achieve results when a deadline approaches is drag more people in, so that's what we'll do - let's replace the En Prise with a fleet of three ships!*
 
 * Replace the instantiation of the En Prise with a router that creates three (unarmed) ships (see the Pi example for inspiration). Stick with the RoundRobin router for now. Also, for consistency, call the Router the same name as the En Prise.
@@ -174,7 +174,7 @@ Notes:
 Notes:
 * In the main, routers are transparent between message senders and receivers - they will automatically forward messages between the two parties.
 
-# Part 7 - Beam Me Down (OPTIONAL)
+## Part 7 - Beam Me Down (OPTIONAL)
 **Warnng: You're on your own from hereon out. These are exercises I've conceived, but not actually attempted myself.**
 
 *Some planets are proving stubbornly resilient to our sensors. It looks like the says of being able to rock up, scan the planet and be back in time for last orders may be gone. We're going to have to send in the Redhshirts!*
@@ -187,7 +187,7 @@ Notes:
 Notes:
 * Previously, we've just create actors and left them running, relying on the Akka system taking them down when we close it. Manually killing off the Redshirts after each survey is discussed [here](http://doc.akka.io/docs/akka/current/scala/actors.html#Stopping_actors).
 
-# Part 8 - The Sky (Universe?) Is The limit (OPTIONAL)
+## Part 8 - The Sky (Universe?) Is The limit (OPTIONAL)
 *If you've made it this far, then you're obviously an Akka savant, or are *really* trying to put off something else. I've throw in a few half-baked suggestions for other extensions you might consider*
 
 * Read about Akka remoting and then expand the fleet to multiple machines.
