@@ -1,4 +1,4 @@
-package uk.co.bbc.dojo.awaymission.akka.actors
+package uk.co.bbc.dojo.awaymission.actors
 
 import akka.actor.Actor
 import uk.co.bbc.dojo.awaymission.ui.{ConsoleOutputListener, UIListener, DisplayableThing}

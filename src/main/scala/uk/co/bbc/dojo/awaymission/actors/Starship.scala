@@ -1,8 +1,8 @@
-package uk.co.bbc.dojo.awaymission.akka.actors
+package uk.co.bbc.dojo.awaymission.actors
 
 import akka.actor.Props
-import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand.{StarshipSOS, SurveyResults}
-import uk.co.bbc.dojo.awaymission.akka.actors.Starship.ExplorePlanet
+import StarshipCommand.{StarshipSOS, SurveyResults}
+import Starship.ExplorePlanet
 import uk.co.bbc.dojo.awaymission.locations.{Orbiting, StarshipBase, Planet}
 import uk.co.bbc.dojo.awaymission.incidents.HostileAlienAttack
 

@@ -1,19 +1,19 @@
 package uk.co.bbc.dojo.awaymission
 
-import _root_.akka.pattern.ask
-import _root_.akka.actor.ActorSystem
-import _root_.akka.util.Timeout
-import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand
-import uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand.SeekOutNewLifeAndNewCivilisations
+import akka.pattern.ask
+import akka.actor.ActorSystem
+import akka.util.Timeout
+import akka.util.Timeout
+import uk.co.bbc.dojo.awaymission.actors.StarshipCommand
+import uk.co.bbc.dojo.awaymission.actors.StarshipCommand.SeekOutNewLifeAndNewCivilisations
 import uk.co.bbc.dojo.awaymission.locations.Planet
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
 class AwayMission {
-  /** Returns the number of planets with life on them */
   def surveyPlanets(planetsToSurvey: List[Planet]): Int = {
-    val akkaSystem = ActorSystem("The-Corperation")
+    val akkaSystem = ActorSystem("The-Corporation")
 
     val starshipCommand = akkaSystem.actorOf(StarshipCommand(), name = "Admiral-Reith")
 
