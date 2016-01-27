@@ -1,12 +1,11 @@
 package uk.co.bbc.dojo.awaymission.actors
 
-import akka.actor.{ActorRef, Props, Actor}
-import akka.routing.{BalancingPool, RoundRobinPool}
+import akka.actor.{ActorRef, Props}
+import akka.event.LoggingReceive
+import akka.routing.BalancingPool
 import StarshipCommand.{StarshipSOS, SeekOutNewLifeAndNewCivilisations, SurveyResults}
 import Starship.ExplorePlanet
 import uk.co.bbc.dojo.awaymission.locations.{Planet, StarshipBase}
-
-import scala.collection.immutable.Stream.Empty
 
 object StarshipCommand {
   case class SeekOutNewLifeAndNewCivilisations(planetsToExplore: List[Planet])
@@ -16,9 +15,9 @@ object StarshipCommand {
   def apply(): Props = Props(new StarshipCommand)
 }
 
-//TODO: Want to automatically list passed messages.
-class StarshipCommand() extends DisplayableActor(StarshipBase) {
-  private var externalResultActorRef: ActorRef = _ //TODO: Try and do this better.
+class StarshipCommand() extends ActorWithLocation(StarshipBase) {
+  private var externalResultActorRef: ActorRef = _
+
   private var planetsToExplore = Seq[Planet]()
   private var uninhabitedPlanets = Seq[Planet]()
   private var inhabitedPlanets = Seq[Planet]()
@@ -30,7 +29,7 @@ class StarshipCommand() extends DisplayableActor(StarshipBase) {
 
   private val theMerciless = context.actorOf(Starship(LaserGuns), "The-BBC-Merciless")
 
-  override def receive: Receive = {
+  override def receive: Receive = LoggingReceive {
     case SeekOutNewLifeAndNewCivilisations(planetsToExplore: Seq[Planet]) => {
       externalResultActorRef = sender
       this.planetsToExplore = planetsToExplore
@@ -39,8 +38,6 @@ class StarshipCommand() extends DisplayableActor(StarshipBase) {
         case Nil => sender ! 0
         case _ => {
           for(nextPlanetToExplore <- planetsToExplore) {
-            val explorePlanetMessage = ExplorePlanet(nextPlanetToExplore)
-            lastAction = s"messaged $starshipDispatcher with $explorePlanetMessage"
             starshipDispatcher ! ExplorePlanet(nextPlanetToExplore)
           }
         }
@@ -58,8 +55,8 @@ class StarshipCommand() extends DisplayableActor(StarshipBase) {
     }
     case StarshipSOS(planet) => {
       val explorePlanetMessage = ExplorePlanet(planet)
-      lastAction = s"messaged $theMerciless with $explorePlanetMessage"
       theMerciless ! ExplorePlanet(planet)
+      log.info(s"messaged $theMerciless with $explorePlanetMessage")
     }
   }
 }

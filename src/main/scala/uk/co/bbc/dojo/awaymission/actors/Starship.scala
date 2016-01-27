@@ -1,10 +1,11 @@
 package uk.co.bbc.dojo.awaymission.actors
 
-import akka.actor.Props
+import akka.actor.{ActorLogging, Props}
 import StarshipCommand.{StarshipSOS, SurveyResults}
 import Starship.ExplorePlanet
+import akka.event.LoggingReceive
 import uk.co.bbc.dojo.awaymission.locations.{Orbiting, StarshipBase, Planet}
-import uk.co.bbc.dojo.awaymission.incidents.HostileAlienAttack
+import uk.co.bbc.dojo.awaymission.incidents.{SensorOverloadExplosion, HostileAlienAttack}
 
 object Starship {
   case class ExplorePlanet(planetToExplore: Planet)
@@ -13,23 +14,19 @@ object Starship {
   def apply(armament: Armament): Props = Props(new Starship(armament))
 }
 
-class Starship(armament: Armament) extends DisplayableActor(StarshipBase) { // New ships are always created at starship base.
-  override def receive: Receive = {
+class Starship(armament: Armament) extends ActorWithLocation(StarshipBase) with ActorLogging { // New ships are always created at starship base.
+  override def receive: Receive = LoggingReceive {
     case ExplorePlanet(planet) => {
-      travelTo(planet)
+      location = Orbiting(planet)
       val alienLifePresent = checkForAlienLife(planet)
-      val surveyResultMessage = SurveyResults(planet, alienLifePresent)
-      lastAction = s"messaged $sender with $surveyResultMessage"
-      sender ! surveyResultMessage
+      sender ! SurveyResults(planet, alienLifePresent)
     }
   }
 
-  private def travelTo(planet: Planet) = {
-    location = Orbiting(planet)
-  }
-
   private def checkForAlienLife(planet: Planet): Boolean = {
-    lastAction = s"scanning ${planet} for life"
+    log.info(s"$this scanning ${planet} for life")
+
+    if (location != Orbiting(planet)) throw new SensorOverloadExplosion(location, planet)
 
     try {
       planet.scanForLife.get
@@ -43,10 +40,10 @@ class Starship(armament: Armament) extends DisplayableActor(StarshipBase) { // N
   override def preRestart(reason: Throwable, message: Option[Any]) = {
     message match {
       case Some(deadlyPlanetMessage: ExplorePlanet) => {
-        lastAction = s"was destroyed by a ${reason.getMessage}"
+        log.info(s"$this was destroyed by a ${reason.getMessage}")
         context.sender() ! StarshipSOS(deadlyPlanetMessage.planetToExplore)
       }
-      case _ => "was destroyed by a mysterious anomoly (unhandled exception)"
+      case _ => log.info(s"$this was destroyed by a mysterious anomoly (unhandled exception)")
     }
 
     super.preRestart(reason, message) // Keep the parent behaviour

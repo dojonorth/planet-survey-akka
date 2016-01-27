@@ -9,3 +9,5 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2" % "2.3.12" % "test",
   "com.typesafe.akka" %% "akka-actor" % "2.4.1"
 )
+
+unmanagedClasspath in Test += baseDirectory.value

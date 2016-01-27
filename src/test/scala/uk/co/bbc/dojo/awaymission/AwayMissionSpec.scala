@@ -40,7 +40,6 @@ class AwayMissionSpec extends FunSpec with Matchers {
         val awayMission = new AwayMission
         val numberOfPlanetsWithLife = awayMission.surveyPlanets(planetsToScan)
 
-        // Starship Command assumes that the planet was inhabited if it destroyed the En Prise.
         numberOfPlanetsWithLife should be(planetsToScan.length)
       }
 
@@ -50,7 +49,6 @@ class AwayMissionSpec extends FunSpec with Matchers {
         val awayMission = new AwayMission
         val numberOfPlanetsWithLife = awayMission.surveyPlanets(planetsToScan)
 
-        // Starship Command assumes that the planet was inhabited if it destroyed the En Prise.
         numberOfPlanetsWithLife should be(2)
       }
 
@@ -69,7 +67,7 @@ class AwayMissionSpec extends FunSpec with Matchers {
         numberOfPlanetsWithLife should be(4)
 
         val totalTime = (endTime - startTime) / 1000.0
-        totalTime should be(7.0 +- 0.5)
+        totalTime should be(7.0 +- 0.5) //If you have a REALLY slow computer, you may need to increase the variance slightly.
       }
     }
 }

@@ -193,3 +193,8 @@ Notes:
 * Read about Akka remoting and then expand the fleet to multiple machines.
 * Akka offers [at most once](http://doc.akka.io/docs/akka/current/general/message-delivery-reliability.html) delivery of messages. Read up on and simulate communication over a unreliable message channel.
 * Introduce a UI. Include full 3D rendering of procedurally generated planets and realistic space battles.
+
+
+TODOs:
+Ideally tidy up the logging format.
+Ideally don't log full excetions.

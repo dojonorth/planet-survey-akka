@@ -11,6 +11,8 @@ trait Planet extends Location {
   override def toString: String = name
 }
 
+case class Orbiting(planet: Planet) extends Location
+
 case class ScannablePlanet(name: String, hasLife: Boolean, timeToScanInMilliseconds: Int = 0) extends Planet {
   override def scanForLife: Try[Boolean] = {
     Thread.sleep(timeToScanInMilliseconds)
