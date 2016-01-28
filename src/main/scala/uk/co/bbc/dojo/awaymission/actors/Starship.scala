@@ -13,18 +13,17 @@ object Starship {
   def apply(armament: Armament): Props = Props(new Starship(armament))
 }
 
-class Starship(armament: Armament) extends ActorWithLocation(StarshipBase) with ActorLogging { // New ships are always created at starship base.
+class Starship(armament: Armament) extends ActorWithLocation(StarshipBase) { // New ships are always created at starship base.
   override def receive: Receive = LoggingReceive {
     case ExplorePlanet(planet) => {
       //Do something in response to this.
     }
-    case anyOldMessage => log.info(s"Don't know what to do with $anyOldMessage")
   }
 
   private def checkForAlienLife(planet: Planet): Boolean = {
-    log.info(s"$this scanning ${planet} for life")
-
     location = Orbiting(planet)
+
+    log.info(s"is about to scan ${planet} for life")
 
     try {
       planet.scanForLife.get

@@ -9,6 +9,6 @@ abstract class ActorWithLocation(private var _location: Location) extends Actor 
   protected def location_= (newLocation: Location) {
     val oldLocation = location
     _location = newLocation
-    log.info(s"$this moved from $oldLocation to $newLocation")
+    log.info(s"moved from $oldLocation to $newLocation")
   }
 }

@@ -2,12 +2,12 @@ package uk.co.bbc.dojo.awaymission.actors
 
 import akka.actor.{ActorRef, Props}
 import akka.event.LoggingReceive
-import uk.co.bbc.dojo.awaymission.actors.StarshipCommand.{SurveyResults, SeekOutNewLifeAndNewCivilisations}
+import uk.co.bbc.dojo.awaymission.actors.StarshipCommand.{SurveyResult, SeekOutNewLifeAndNewCivilisations}
 import uk.co.bbc.dojo.awaymission.locations.{Planet, StarshipBase}
 
 object StarshipCommand {
   case class SeekOutNewLifeAndNewCivilisations(planetsToExplore: List[Planet])
-  case class SurveyResults(planet: Planet, alienLifePresent: Boolean)
+  case class SurveyResult(planet: Planet, alienLifePresent: Boolean)
 
   def apply(): Props = Props(new StarshipCommand)
 }
@@ -24,18 +24,25 @@ class StarshipCommand() extends ActorWithLocation(StarshipBase) {
       this.planetsToExplore = planetsToExplore
 
       planetsToExplore match {
-        case Nil => sender ! 0 // No planets, so return immediately.
+        case Nil => {
+          // No planets, so return immediately.
+          sender ! 0
+          log.info(s"messaged $externalResultActorRef with a default value of 0 planets.")
+        }
         case _ => {
           for(nextPlanetToExplore <- planetsToExplore) {
-            // Message the ship for each planet.
+            // We'll nessage the ship for each planet.
           }
         }
       }
     }
-    case SurveyResults(planet, alienLifePresent) => {
+    case SurveyResult(planet, alienLifePresent) => {
       // For now, we just always immediately respond with 0. Later we'll do some processing here.
+      val numberOfInhabitedPlanets = 0
 
-      externalResultActorRef ! 0
+      externalResultActorRef ! numberOfInhabitedPlanets
+
+      log.info(s"messaged $externalResultActorRef that there are $numberOfInhabitedPlanets inhabited planet(s).")
     }
   }
 }

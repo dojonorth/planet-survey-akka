@@ -16,7 +16,7 @@ class AwayMission {
 
     val starshipCommand = ??? // Create starship command here.
 
-    implicit val timeout = Timeout(Duration.create(20, SECONDS))
+    implicit val timeout = Timeout(Duration.create(15, SECONDS))
     val futureResponse = ??? // Message starship command with a SeekOutNewLifeAndNewCivilisations(planetsToSurvey) message. Use the '?' operator (should be the only place you use it).
 
     val inhabitedPlanets = Await.result(futureResponse, timeout.duration).asInstanceOf[Int]
