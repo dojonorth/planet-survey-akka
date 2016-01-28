@@ -13,15 +13,10 @@ object StarshipCommand {
 }
 
 class StarshipCommand() extends ActorWithLocation(StarshipBase) {
-  // We'll maintain mutable lists of planets visited. Not very idiomatic Scala - but more accessible if you're not familiar with it.
+  // We'll maintain mutable state of planet(s depending on where you go with exercise 3) visited. Not very idiomatic Scala - but more accessible if you're not familiar with it.
   private var planetsToExplore = Seq[Planet]()
-  private var occupiedPlanets = Seq[Planet]()
-  private var unoccupiedPlanets = Seq[Planet]()
 
   private var externalResultActorRef: ActorRef = _
-
-
-  private val surrveyShip = ??? // Create the En Prise here.
 
   override def receive: Receive = LoggingReceive {
     case SeekOutNewLifeAndNewCivilisations(planetsToExplore: Seq[Planet]) => {
