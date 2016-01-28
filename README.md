@@ -116,7 +116,7 @@ The system outputs events to the console, which are key in understanding how the
 * Go to **uk.co.bbc.dojo.awaymission.AwayMission**
 * Create an an Akka system called 'The-Corporation'
 * Create a StarshipCommand actor called 'Admiral-Reith'. This should be a top-level actor i.e. created by calling 'actorOf' directly on the Akka system you've just created.
-* Message the StarshipCommand actor with a **uk.co.bbc.dojo.awaymission.akka.actorsSeekOutNewLifeAndNewCivilisations** telling it to go and scan the passed planet (Gallifrey, in this case).
+* Message the StarshipCommand actor with a **uk.co.bbc.dojo.awaymission.akka.actorsSeekOutNewLifeAndNewCivilisations**. Starship Command should return immediately saying that it hasn't found any life.
 
 Notes:
 * Be careful not to remove the 'akka.pattern.ask' import, which is needed for the '?' messaging operator to work.

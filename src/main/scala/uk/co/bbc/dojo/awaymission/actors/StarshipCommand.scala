@@ -23,9 +23,10 @@ class StarshipCommand() extends ActorWithLocation(StarshipBase) {
       this.planetsToExplore = planetsToExplore
 
       planetsToExplore match {
-        case Nil => sender ! -1
+        case Nil => sender ! 0 // No planets, so return immediately.
         case _ => {
           for(nextPlanetToExplore <- planetsToExplore) {
+            // Message the ship for each planet.
           }
         }
       }
