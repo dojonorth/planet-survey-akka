@@ -32,7 +32,7 @@ val ACCURACY_DELTA = pow(10, -NO_DECIMAL_PLACES_TO_CALCULATE_TO)
   private def runTimedTest(piCalculator: PiCalculator) = {
     val startTime = System.currentTimeMillis()
 
-    val pi = piCalculator.calculatePi()
+    val pi = piCalculator.calculatePi
 
     val endTime = System.currentTimeMillis()
     val totalTime = (endTime - startTime) / 1000.0
