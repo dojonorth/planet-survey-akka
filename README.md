@@ -165,10 +165,10 @@ Notes:
 ## Part 4 - Reporting Failure
 *Oh dear, and everything was going so well... Something went wrong while we were scanning the next batch of planets. Now Starship Command is left waiting indefinitely for a response that will never come. We need to improve our protocols to avoid this situation.*
 
-* Before thinking about making the test pass, look at the series of events that happened in the console. After scanning the errant planet, the En Prise still managed to continue its journey. Note though that it moved from *Starship Command* to the next planet along! The reason was Akka's default error handling strategy is to throw away the message that caused the exception, recreate the actor (hidden within the ,  remains the same) and the process the next message. Hence, the En Prise moving from Starship Command - it was really a different ship that continued - all new ships start out at Starship Command.
-* Override the En Prise's *preRestart* method to send an SOS with the name of the failing planet to Starship Command. See [here](http://doc.akka.io/docs/akka/current/scala/actors.html#Actor_API) for the method signature (make sure to call 'super.preRestart(reason, message)' at the end of the override behaviour - It shouldn't matter in this case, but it's good practice).
-* For now, have StarshipCommand assume that if there was someone there to blow up the En Prise, then it probably means that the planet was occupied, so assume that by default.
-* We'll want to include the name of the bad planet int he SOS message. The 'preRestart' method includes the message that was being processed that caused the failure - we know that this must be an 'ExplorePlanet' message, so we can do something along these lines.
+* Before thinking about making the test pass, look at the series of events that happened in the console. After scanning the errant planet, the En Prise still managed to continue its journey. Note though that it moved from *Starship Command* to the next planet along! The reason was Akka's default error handling strategy is to throw away the message that caused the exception, recreate the actor (hidden within the outer 'ActorRef' container, which remains the same) and the process the next message. Hence, the En Prise moving from Starship Command - it was really a different ship that continued - all new ships start out at Starship Command.
+* Override the En Prise's *preRestart* method to send an SOS message with the name of the failing planet to Starship Command. See [here](http://doc.akka.io/docs/akka/current/scala/actors.html#Actor_API) for the method signature (make sure to call 'super.preRestart(reason, message)' at the end of the override behaviour - It shouldn't matter in this case, but it's good practice).
+* For now, have StarshipCommand assume that if there was someone there to blow up the En Prise, then it probably means that the planet was occupied.
+* **HINT: We'll want to include the name of the bad planet int he SOS message. The 'preRestart' method includes the message that was being processed that caused the failure - we know that this must be an 'ExplorePlanet' message, so we can do something along these lines:**
 ```
 message match {
       case Some(deadlyPlanetMessage: ExplorePlanet) => {...}
@@ -185,9 +185,9 @@ Notes:
 * Whenever the En Prise sends an SOS, then message the new ship and tell them to scan that planet instead.
 
 ## Part 6 - Expand the Fleet
-*The list of planets to explore is never ending! Starship Command has lined a list of new planets to explore. These ones have thick atmospheres and are going to take time scan and Command wants the results asap! As we all know, the way to achieve results when a deadline approaches is drag more people in, so that's what we'll do - let's replace the En Prise with a fleet of three ships!*
+*The list of planets to explore is never ending! Starship Command has lined up a long list of new planets to explore. These ones have thick atmospheres and are going to take time to scan, but Command wants the results ASAP! As we all know, the way to achieve results when a deadline approaches is drag more people in, so that's what we'll do - let's replace the En Prise with a fleet of three ships!*
 
-* Replace the instantiation of the En Prise with a router that creates three (unarmed) ships (see the Pi example for inspiration). Stick with the RoundRobin router for now. Also, for consistency, call the Router the same name as the En Prise.
+* Replace the instantiation of the En Prise with a router that creates **three** (unarmed) ships. Use a RoundRobin router for now. Also, for consistency, call the Router the same name as the En Prise.
 * That should work, but it's still too slow. The problem is that the RoundRobin router that we're using is allocating the planets to explore to the Starships up front. However, some planets are taking much longer to survey than others, leaving some of our fleet idling. Replace the RoundRobin strategy with a more efficient one (see [here](http://doc.akka.io/docs/akka/2.4.1/scala/routing.html) for details.)
 
 Notes:
@@ -207,7 +207,7 @@ Notes:
 * Previously, we've just create actors and left them running, relying on the Akka system taking them down when we close it. Manually killing off the Redshirts after each survey is discussed [here](http://doc.akka.io/docs/akka/current/scala/actors.html#Stopping_actors).
 
 ## Part 8 - The Sky (Universe?) Is The limit (OPTIONAL)
-*If you've made it this far, then you're obviously an Akka savant, or are *really* trying to put off something else. I've throw in a few half-baked suggestions for other extensions you might consider*
+*If you've made it this far, then you're obviously an Akka savant, or are -really- trying to put off something else. I've throw in a few half-baked suggestions for other extensions you might consider*
 
 * Read about Akka remoting and then expand the fleet to multiple machines.
 * Akka offers [at most once](http://doc.akka.io/docs/akka/current/general/message-delivery-reliability.html) delivery of messages. Read up on and simulate communication over a unreliable message channel.
