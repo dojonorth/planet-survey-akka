@@ -8,19 +8,13 @@ import uk.co.bbc.dojo.awaymission.locations.{Orbiting, StarshipBase, Planet}
 import uk.co.bbc.dojo.awaymission.incidents.{SensorOverloadExplosion, HostileAlienAttack}
 
 object Starship {
-  case class ExplorePlanet(planetToExplore: Planet)
-
   def apply(): Props = Props(new Starship(Unarmed))
   def apply(armament: Armament): Props = Props(new Starship(armament))
 }
 
 class Starship(armament: Armament) extends ActorWithLocation(StarshipBase) with ActorLogging { // New ships are always created at starship base.
   override def receive: Receive = LoggingReceive {
-    case ExplorePlanet(planet) => {
-      location = Orbiting(planet)
-      val alienLifePresent = checkForAlienLife(planet)
-      sender ! SurveyResults(planet, alienLifePresent)
-    }
+    case anyOldMessage => log.info(s"Don't know what to do with $anyOldMessage")
   }
 
   private def checkForAlienLife(planet: Planet): Boolean = {
@@ -35,18 +29,6 @@ class Starship(armament: Armament) extends ActorWithLocation(StarshipBase) with 
         armament.handleAttack(e)
       }
     }
-  }
-
-  override def preRestart(reason: Throwable, message: Option[Any]) = {
-    message match {
-      case Some(deadlyPlanetMessage: ExplorePlanet) => {
-        log.info(s"$this was destroyed by a ${reason.getMessage}")
-        context.sender() ! StarshipSOS(deadlyPlanetMessage.planetToExplore)
-      }
-      case _ => log.info(s"$this was destroyed by a mysterious anomoly (unhandled exception)")
-    }
-
-    super.preRestart(reason, message) // Keep the parent behaviour
   }
 }
 
