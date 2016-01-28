@@ -35,7 +35,7 @@ class AwayMissionSpec extends FunSpec with Matchers {
       // the En Prise will be recreated and will process the remaining messages. However, Starship Command will never
       // receive a response for Clanger Prime and so will eventually timeout.
       ignore("Part 4 - The En Prise being destroyed will not stop the remaining planets being scanned.") {
-        val planetsToScan = List(ScannablePlanet("Zygor", true), ScannablePlanet("Tripod", true), ClangerPrime)
+        val planetsToScan = List(ScannablePlanet("Zygor", true), ClangerPrime, ScannablePlanet("Tripod", true))
 
         val awayMission = new AwayMission
         val numberOfPlanetsWithLife = awayMission.surveyPlanets(planetsToScan)
