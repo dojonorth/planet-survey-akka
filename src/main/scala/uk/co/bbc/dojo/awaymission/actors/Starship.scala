@@ -18,7 +18,7 @@ class Starship(armament: Armament) extends ActorWithLocation(StarshipBase) with 
   private def checkForAlienLife(planet: Planet): Boolean = {
     log.info(s"$this scanning ${planet} for life")
 
-    if (location != Orbiting(planet)) throw new SensorOverloadExplosion(location, planet)
+    location = Orbiting(planet)
 
     try {
       planet.scanForLife.get
