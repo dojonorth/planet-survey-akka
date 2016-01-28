@@ -104,7 +104,7 @@ ignore("the En Prise should survey a single planet") {
 ```
 becomes:
 ```
-ignore("the En Prise should survey a single planet") {
+it("the En Prise should survey a single planet") {
 ```
 The system outputs events to the console, which are key in understanding how the Akka system is operating, so even though as we build up functionality, the earlier tests will still pass, I recommend only running one test at a time, so as not to clutter the console. You can do this by explicitly selecting single tests to run in IntelliJ or by only ever having the current test not ignored if you're running them from the command line.
 

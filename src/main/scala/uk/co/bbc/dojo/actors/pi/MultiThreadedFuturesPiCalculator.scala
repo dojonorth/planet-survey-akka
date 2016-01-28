@@ -5,7 +5,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
 class MultiThreadedFuturesPiCalculator(numberOfTerms: Long) extends PiCalculator {
   private val iterationsPerFuture = 1000000l
-  override def calculatePi(): Double = {
+  override def calculatePi: Double = {
     import ExecutionContext.Implicits.global //Will have the same number of threads as you have cores.
 
     val blockIterationStarts = 0l to numberOfTerms by iterationsPerFuture // Will over calculate slightly (round up)
