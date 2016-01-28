@@ -1,8 +1,11 @@
 # planet-survey-akka
 Learn Akka! Discover strange new alien species, then get killed by them!
 
-TODO: Say which sections are skippable if you're really YOLO (basically, just jump straight in and go through the worked example.)
-TODO: Say somehere about observing the paths and what they mean.
+#TL;DR
+Ideally read everything. If you want to try and blaze through then:
+* Read the Setup section.
+* Read and do the Exercise section in order.
+* To stop the console being swamped just run one exercise test case at a time - you can do this in intelliJ or using the console by ensuring that only the one you care about is not ignored (also make sure you're not rerunning the Pi tests each time - i.e. use **sbt 'test-only uk.co.bbc.dojo.awaymission.AwayMissionSpec'** .
 
 ## Introduction
 Reasoning about concurrent code can be very hard - manually managing interacting threads is likely one of the hardest things you'd ever be asked to do as a programmer. Despite this, the need to parallelise to meet performance goals is ever increasing. This can be attributed to a shift over the last decade or so, whereby CPU performance increases have come much more from increasing numbers of logical cores and not increased single-core performance. Hence, it's no surprise that in recent years, new abstractions have gained popularity that attempt to insulate us from low-level thread management and enable to reason at a a higher level.
@@ -43,9 +46,7 @@ sbt 'test-only uk.co.bbc.dojo.awaymission.AwayMissionSpec'
 ```
 
 ## The Actor Model
-The Actor Model originated in a 1973 paper by [Carl Hewitt](https://en.wikipedia.org/wiki/Carl_Hewitt). Ericsson's use of Actors in [Erlang](https://en.wikipedia.org/wiki/Erlang_(programming_language)) (**Er**icsoon **Lang**uage) in the late 90s helped popularise it.
-
-The key principles of the actor model (with a slight emphasis on the Akka implementation) are:
+The Actor Model originated in a 1973 paper by [Carl Hewitt](https://en.wikipedia.org/wiki/Carl_Hewitt). The key principles of the actor model (with a slight emphasis on the Akka implementation) are:
 * Everything is an Actor - akin to Objects in OO.
 * Actors are autonomous objects. They don't share state.
 * Actors communicate via asynchronous immutable messages.
@@ -114,10 +115,11 @@ The system outputs events to the console, which are key in understanding how the
 
 * Go to **uk.co.bbc.dojo.awaymission.AwayMission**
 * Create an an Akka system called 'The-Corporation'
-* Create a StarshipCommand actor called 'Admiral-Reith'. This should be a top-level actor i.e. create is by calling 'actorOf' directly on the Akka system you've just created.
-* Message the starship command actor with a **uk.co.bbc.dojo.awaymission.akka.actorsSeekOutNewLifeAndNewCivilisations** telling it to go and scan the passed planet (Gallifrey, in this case).
+* Create a StarshipCommand actor called 'Admiral-Reith'. This should be a top-level actor i.e. created by calling 'actorOf' directly on the Akka system you've just created.
+* Message the StarshipCommand actor with a **uk.co.bbc.dojo.awaymission.akka.actorsSeekOutNewLifeAndNewCivilisations** telling it to go and scan the passed planet (Gallifrey, in this case).
 
 Notes:
+* Be careful not to remove the 'akka.pattern.ask' import, which is needed for the '?' messaging operator to work.
 * Akka forces you to construct hierarchies of actors, such that each actor is supervised by a single parent. This map well onto a military / corporate structure, so we'll assume a chain of command in our example.
 * The name parameter is optional to Akka Systems and Actors, however, providing one is good practice. Be aware that Akka names don't allow certain special characters or spaces. For now, stick to alphanumeric characters, numbers and hyphens.
 * The 'actorOf' method actually takes a 'Props' object. I've glossed over (for more info go [here](http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#Props) this by providing companion objects for each actor that handle this in their constructors. i.e. you can just call:
@@ -126,7 +128,7 @@ actorOf(StarshipCommand(), name = ...
 ```
 
 ## Part 2 - Creating Our First Ship
-*Without any starships to send out into space, Starship command is struggling. We need a ship that we can actually send out there to do something! In this part, we'll create our first starship under the stewardship of The Corporate, the BBC En Prise and send it out into the great unknown!*
+*Without any starships to send out into space, Starship Command is struggling. We need a ship that we can actually send out there to do something! In this part, we'll create our first starship under the stewardship of The Corporate, the BBC En Prise and send it out into the great unknown!*
 
 * Go to **uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand**
 * Create a new Starship 'The-BBC-Enprise' that is supervised by StarshipCommand - i.e. call 'actorOf' on it's context object. The context object inherits lots of useful state. Find out more about it [here](http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#Actor_API).
@@ -152,7 +154,7 @@ Notes:
 *Oh dear, and everything was going so well... Something went wrong while we were scanning the next batch of planets. Now Starship Command is left waiting indefinitely for a response that will never come. We need to improve our protocols to avoid this situation.*
 
 * Before thinking about making the test pass, look at the series of events that happened in the console. After scanning the errant planet, the En Prise still managed to continue its journey. Note though that it moved from *Starship Command* to the next planet along! The reason was Akka's default error handling strategy is to throw away the message that caused the exception, recreate the actor (hidden within the ActorRefwhich remains the same) and the process the next message. Hence, the En Prise moving from Starship Command - it was really a different ship that continued - all new ships start out at Starship Command.
-* Override the En Prise's *preRestart* method to send an SOS with the name of the failing planet to Starship command. See [here](http://doc.akka.io/docs/akka/current/scala/actors.html#Actor_API) for the method signature (make sure to call 'super.preRestart(reason, message)' at the end of the override behaviour - It shouldn't matter in this case, but it's good practice).
+* Override the En Prise's *preRestart* method to send an SOS with the name of the failing planet to Starship Command. See [here](http://doc.akka.io/docs/akka/current/scala/actors.html#Actor_API) for the method signature (make sure to call 'super.preRestart(reason, message)' at the end of the override behaviour - It shouldn't matter in this case, but it's good practice).
 * For now, have StarshipCommand assume that if there was someone there to blow up the En Prise, then it probably means that the planet was occupied, so assume that by default.
 
 Notes:

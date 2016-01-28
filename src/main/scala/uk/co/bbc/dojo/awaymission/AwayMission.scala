@@ -2,6 +2,7 @@ package uk.co.bbc.dojo.awaymission
 
 import akka.util.Timeout
 import uk.co.bbc.dojo.awaymission.locations.Planet
+import akka.pattern.ask //Needed for the ask pattern.
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

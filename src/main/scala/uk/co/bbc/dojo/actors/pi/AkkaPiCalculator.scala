@@ -44,7 +44,7 @@ class Master(numberOfWorkerActors: Int, iterationsPerActorMessage: Long, totalNu
 
   def receive = {
     case Calculate =>
-      // Keep tract of the actor that we will be sending the result to (a temporary one created to fulfill the ask pattern) TODO: Add link for further detail.
+      // Keep track of the actor that we will be sending the result to (a temporary one created to fulfill the ask pattern) TODO: Add link for further detail.
       actorToSendResultTo = sender
 
       // We create a worker router. This will spawn worker actors and dispatch messages to them in turn using a round robin strategy.
