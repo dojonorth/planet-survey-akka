@@ -132,7 +132,7 @@ actorOf(StarshipCommand(), name = ...
 
 * Go to **uk.co.bbc.dojo.awaymission.akka.actors.StarshipCommand**
 * Create a new Starship 'The-BBC-Enprise' that is supervised by StarshipCommand - i.e. call 'actorOf' on it's context object. The context object inherits lots of useful state. Find out more about it [here](http://doc.akka.io/docs/akka/2.4.1/scala/actors.html#Actor_API).
-* Create a new message type in Starship that it can receive and contains the name of a planet to explore.
+* Check Starship for a suitable message type we can pass it containing the planet to explore.
 * Message the En Prise with the new message and tell it to go and scan the passed planet (i.e. call the 'checkForAlienLife' method).
 * Once the En Prise has scanned the planet we then need it to message back StarshipCommand with the result of the scan.
 * Have Starship Command receive the response and return whether or not the planet is occupied.
@@ -153,10 +153,15 @@ Notes:
 ## Part 4 - Reporting Failure
 *Oh dear, and everything was going so well... Something went wrong while we were scanning the next batch of planets. Now Starship Command is left waiting indefinitely for a response that will never come. We need to improve our protocols to avoid this situation.*
 
-* Before thinking about making the test pass, look at the series of events that happened in the console. After scanning the errant planet, the En Prise still managed to continue its journey. Note though that it moved from *Starship Command* to the next planet along! The reason was Akka's default error handling strategy is to throw away the message that caused the exception, recreate the actor (hidden within the ActorRefwhich remains the same) and the process the next message. Hence, the En Prise moving from Starship Command - it was really a different ship that continued - all new ships start out at Starship Command.
+* Before thinking about making the test pass, look at the series of events that happened in the console. After scanning the errant planet, the En Prise still managed to continue its journey. Note though that it moved from *Starship Command* to the next planet along! The reason was Akka's default error handling strategy is to throw away the message that caused the exception, recreate the actor (hidden within the ,  remains the same) and the process the next message. Hence, the En Prise moving from Starship Command - it was really a different ship that continued - all new ships start out at Starship Command.
 * Override the En Prise's *preRestart* method to send an SOS with the name of the failing planet to Starship Command. See [here](http://doc.akka.io/docs/akka/current/scala/actors.html#Actor_API) for the method signature (make sure to call 'super.preRestart(reason, message)' at the end of the override behaviour - It shouldn't matter in this case, but it's good practice).
 * For now, have StarshipCommand assume that if there was someone there to blow up the En Prise, then it probably means that the planet was occupied, so assume that by default.
-
+* We'll want to include the name of the bad planet int he SOS message. The 'preRestart' method includes the message that was being processed that caused the failure - we know that this must be an 'ExplorePlanet' message, so we can do something along these lines.
+```
+message match {
+      case Some(deadlyPlanetMessage: ExplorePlanet) => {...}
+}
+```
 Notes:
 * See [here](http://doc.akka.io/docs/akka/2.4.1/general/supervision.html#What_Restarting_Means) for more detail on restarts and [here](http://doc.akka.io/docs/akka/2.4.1/scala/fault-tolerance.html#Default_Supervisor_Strategy) for more detail on Akka's default approach to error handling.
 * An alternative approach - that you might try if you're curious - would be to override Starship Command's supervisor strategy to specifically deal with the exception type that we're seeing throw, as described [here](http://doc.akka.io/docs/akka/2.4.1/scala/fault-tolerance.html#Default_Supervisor_Strategy), in some ways, that feels neater, but I don't see how we then recover from it and determine which planet it was we failed to scan. The only solution I could come up with was to introduce a try block around the planet scanning and introduce a new exception type that we throw that includes the name of the bad planet so Command can then pick it up. I'd have thought this would be a common problem, which makes me think I might be missing something, but articles that I found, such as [this](http://mattro.be/rts/posts/2015/08/08/fault-tolerance-in-akka/).
