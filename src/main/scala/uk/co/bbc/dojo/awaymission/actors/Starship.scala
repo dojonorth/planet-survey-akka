@@ -1,8 +1,6 @@
 package uk.co.bbc.dojo.awaymission.actors
 
 import akka.actor.{ActorLogging, Props}
-import StarshipCommand.{StarshipSOS, SurveyResults}
-import Starship.ExplorePlanet
 import akka.event.LoggingReceive
 import uk.co.bbc.dojo.awaymission.locations.{Orbiting, StarshipBase, Planet}
 import uk.co.bbc.dojo.awaymission.incidents.{SensorOverloadExplosion, HostileAlienAttack}

@@ -2,8 +2,7 @@ package uk.co.bbc.dojo.awaymission.actors
 
 import akka.actor.{ActorRef, Props}
 import akka.event.LoggingReceive
-import StarshipCommand.{SeekOutNewLifeAndNewCivilisations, SurveyResults}
-import Starship.ExplorePlanet
+import StarshipCommand.SeekOutNewLifeAndNewCivilisations
 import uk.co.bbc.dojo.awaymission.locations.{Planet, StarshipBase}
 
 object StarshipCommand {
